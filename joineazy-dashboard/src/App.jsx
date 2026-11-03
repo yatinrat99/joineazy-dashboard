@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import StudentDashboard from "./pages/StudentDashboard";
 
 function App() {
   const [role, setRole] = useState("student");
@@ -40,23 +41,31 @@ function App() {
     setCurrentUser(null);
     setEmail("");
     setPassword("");
+    setRole("student");
   }
 
   if (currentUser) {
+    if (currentUser.role === "student") {
+      return (
+        <StudentDashboard
+          user={currentUser}
+          onLogout={handleLogout}
+        />
+      );
+    }
+
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md w-full">
-          <h1 className="text-3xl font-bold text-blue-600">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="bg-white p-8 rounded-xl shadow-lg text-center">
+          <h1 className="text-2xl font-bold text-blue-600">
             Welcome {currentUser.name}!
           </h1>
-
-          <p className="mt-4 text-gray-600">
-            You are logged in as {currentUser.role}.
+          <p className="mt-3 text-gray-500">
+            Admin Dashboard coming next.
           </p>
-
           <button
             onClick={handleLogout}
-            className="mt-6 bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600"
+            className="bg-red-500 text-white px-5 py-2 rounded-lg mt-5"
           >
             Logout
           </button>
@@ -67,6 +76,7 @@ function App() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+
       <div className="bg-white w-full max-w-md p-8 rounded-xl shadow-lg">
 
         <h1 className="text-3xl font-bold text-center text-blue-600">
