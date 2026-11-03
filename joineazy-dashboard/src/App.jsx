@@ -1,6 +1,52 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import StudentDashboard from "./pages/StudentDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+
+const users = [
+  { id: 1, name: "Admin One", email: "admin1@gmail.com", password: "123456", role: "admin" },
+  { id: 2, name: "Admin Two", email: "admin2@gmail.com", password: "123456", role: "admin" },
+  { id: 3, name: "Rahul", email: "rahul@gmail.com", password: "123456", role: "student" },
+  { id: 4, name: "Priya", email: "priya@gmail.com", password: "123456", role: "student" },
+  { id: 5, name: "Amit", email: "amit@gmail.com", password: "123456", role: "student" },
+  { id: 6, name: "Sneha", email: "sneha@gmail.com", password: "123456", role: "student" },
+  { id: 7, name: "Rohan", email: "rohan@gmail.com", password: "123456", role: "student" },
+];
+
+const initialAssignments = [
+  {
+    id: 1,
+    title: "HTML and CSS Assignment",
+    description: "Create a responsive webpage using HTML and CSS.",
+    dueDate: "2026-11-05",
+    driveLink: "https://drive.google.com",
+    createdBy: "admin1@gmail.com",
+    assignedTo: ["rahul@gmail.com", "priya@gmail.com"],
+    statusByStudent: {},
+  },
+  {
+    id: 2,
+    title: "JavaScript Assignment",
+    description: "Practice JavaScript array and string methods.",
+    dueDate: "2026-11-07",
+    driveLink: "https://drive.google.com",
+    createdBy: "admin1@gmail.com",
+    assignedTo: ["rahul@gmail.com", "amit@gmail.com"],
+    statusByStudent: {
+      "rahul@gmail.com": "Submitted",
+    },
+  },
+  {
+    id: 3,
+    title: "React Assignment",
+    description: "Build a React application using hooks.",
+    dueDate: "2026-11-09",
+    driveLink: "https://drive.google.com",
+    createdBy: "admin2@gmail.com",
+    assignedTo: ["rahul@gmail.com", "sneha@gmail.com"],
+    statusByStudent: {},
+  },
+];
 
 function App() {
   const [role, setRole] = useState("student");
@@ -9,15 +55,17 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [error, setError] = useState("");
 
-  const users = [
-    { id: 1, name: "Admin One", email: "admin1@gmail.com", password: "123456", role: "admin" },
-    { id: 2, name: "Admin Two", email: "admin2@gmail.com", password: "123456", role: "admin" },
-    { id: 3, name: "Rahul", email: "rahul@gmail.com", password: "123456", role: "student" },
-    { id: 4, name: "Priya", email: "priya@gmail.com", password: "123456", role: "student" },
-    { id: 5, name: "Amit", email: "amit@gmail.com", password: "123456", role: "student" },
-    { id: 6, name: "Sneha", email: "sneha@gmail.com", password: "123456", role: "student" },
-    { id: 7, name: "Rohan", email: "rohan@gmail.com", password: "123456", role: "student" },
-  ];
+  const [assignments, setAssignments] = useState(() => {
+    const savedData = localStorage.getItem("assignments");
+
+    return savedData
+      ? JSON.parse(savedData)
+      : initialAssignments;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("assignments", JSON.stringify(assignments));
+  }, [assignments]);
 
   function handleLogin(e) {
     e.preventDefault();
@@ -49,28 +97,21 @@ function App() {
       return (
         <StudentDashboard
           user={currentUser}
+          assignments={assignments}
+          setAssignments={setAssignments}
           onLogout={handleLogout}
         />
       );
     }
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-100">
-        <div className="bg-white p-8 rounded-xl shadow-lg text-center">
-          <h1 className="text-2xl font-bold text-blue-600">
-            Welcome {currentUser.name}!
-          </h1>
-          <p className="mt-3 text-gray-500">
-            Admin Dashboard coming next.
-          </p>
-          <button
-            onClick={handleLogout}
-            className="bg-red-500 text-white px-5 py-2 rounded-lg mt-5"
-          >
-            Logout
-          </button>
-        </div>
-      </div>
+      <AdminDashboard
+        user={currentUser}
+        users={users}
+        assignments={assignments}
+        setAssignments={setAssignments}
+        onLogout={handleLogout}
+      />
     );
   }
 
@@ -129,7 +170,9 @@ function App() {
           />
 
           {error && (
-            <p className="text-red-500 text-sm mt-3">{error}</p>
+            <p className="text-red-500 text-sm mt-3">
+              {error}
+            </p>
           )}
 
           <button
@@ -142,7 +185,9 @@ function App() {
         </form>
 
         <div className="mt-6 bg-slate-50 p-3 rounded-lg text-sm text-gray-500">
-          <p className="font-semibold mb-1">Demo Password: 123456</p>
+          <p className="font-semibold mb-1">
+            Demo Password: 123456
+          </p>
           <p>Student: rahul@gmail.com</p>
           <p>Admin: admin1@gmail.com</p>
         </div>
